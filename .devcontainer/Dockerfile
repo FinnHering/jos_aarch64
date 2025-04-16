@@ -6,4 +6,5 @@ RUN apt-get update && \
     ovmf \
     clang \
     lld \
-    build-essential
+    build-essential \
+    git
