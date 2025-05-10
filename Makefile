@@ -1,20 +1,28 @@
 CC := clang
 LD := lld
+TOP = .
+INC += -I. -I/inc/ -I/inc/efi/
 
-CFLAGS := -ffreestanding -MMD -mno-red-zone -std=c99 \
-	-target x86_64-unknown-windows
+LDFLAGS :=
+CFLAGS := -ffreestanding -MMD -std=c99
+CFLAGS += $(INC)
 
-LDFLAGS := -flavor link -subsystem:efi_application -entry:efi_main
+-include boot/boot.mk
+-include kernel/kernel.mk
 
-SRCS := boot/boot.c
+qemu-nox:
+	qemu-system-aarch64 \
+	  -drive if=none,format=raw,id=code,file=./rundir/code.fd,readonly=on \
+	  -drive if=none,format=raw,id=vars,file=./rundir/vars.fd \
+	  -net none \
+	  -cpu max \
+	  -machine virt,pflash0=code,pflash1=vars \
+	  -drive format=raw,file=fat:rw:./rundir/ \
+	  -device qemu-xhci \
+	  -device usb-kbd \
+	  -device virtio-gpu-pci \
+	  -vga std \
+	  -no-reboot
 
-boot/%.o: boot/%.c
-	$(CC) $(CFLAGS) -c $< -o $@
-
-boot/bootAARCH64.efi: boot/boot.o
-	$(LD) $(LDFLAGS) $< -out:$@
-
-clean:
-	rm boot/bootAARCH64.efi boot/*.o boot/*.d
-
-all: boot/bootAARCH64.efi
+all: boot_all kernel_all
+clean: boot_clean kernel_clean

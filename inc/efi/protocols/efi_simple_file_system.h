@@ -1,0 +1,31 @@
+//
+// Created by root on 4/28/25.
+//
+
+#ifndef EFI_SIMPLE_FILE_SYSTEM_H
+#define EFI_SIMPLE_FILE_SYSTEM_H
+
+#include <inc/efi/efi_base.h>
+#include <inc/efi/protocols/efi_file.h>
+
+#define EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_GUID \
+{0x0964e5b22,0x6459,0x11d2,\
+{0x8e,0x39,0x00,0xa0,0xc9,0x69,0x72,0x3b}}
+
+#define EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_REVISION 0x00010000
+
+struct EFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
+
+typedef
+EFI_STATUS
+(EFIAPI *EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_OPEN_VOLUME)(
+    IN struct EFI_SIMPLE_FILE_SYSTEM_PROTOCOL *This,
+    OUT EFI_FILE_PROTOCOL **Root
+);
+
+typedef struct {
+    UINT64 Revision;
+    EFI_SIMPLE_FILE_SYSTEM_PROTOCOL_OPEN_VOLUME OpenVolume;
+} EFI_SIMPLE_FILE_SYSTEM_PROTOCOL;
+
+#endif //EFI_SIMPLE_FILE_SYSTEM_H
